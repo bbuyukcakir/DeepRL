@@ -35,7 +35,6 @@ env = gym.make('Breakout-v0')
 env.reset()
 prev_state = env.env.ale.getScreenRGB()
 out = m.forward(torch.tensor(prev_state).view(1, 3, 210, 160).float())
-J=
 
 J = m.loss()
-print(out)
+
