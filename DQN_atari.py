@@ -16,24 +16,26 @@ class Model(torch.nn.Module):
         self.conv1 = torch.nn.Conv2d(3, 30, 10)
         self.pool = torch.nn.MaxPool2d(kernel_size=4, stride=4)
         self.conv2 = torch.nn.Conv2d(30, 30, 10)
+        self.fc1 = torch.nn.Linear(30 * 10 * 7, 64)
+        self.fc2 = torch.nn.Linear(64, 4)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        y = self.pool(x)
-        y = F.relu(self.conv2(y))
-        res = self.pool(y)
-        return y, res
+        x = self.pool(F.relu(self.conv1(x)))
+        y = self.pool(F.relu(self.conv2(x)))
+        z = (self.fc1(y.view(-1, 30 * 10 * 7)))
+        return torch.sigmoid(self.fc2(z))
+
+    def loss(self, y, y_pred):
+        F.mse_loss()
 
 
 fig, axs = plt.subplots(nrows=1, ncols=3)
-m = Model()
+m = Model().float()
 env = gym.make('Breakout-v0')
 env.reset()
-observation, reward, done, info = env.step(1)
-obs = torch.tensor(observation/255)
-# a = (m.conv1(obs.view(1, 3, 210, 160)))
-# x, y = m.forward(torch.tensor(observation).view(1, 3, 210, 160))
-#
-# axs[0].imshow(observation)
-# axs[1].imshow(x)
-# axs[2].imshow(y)
+prev_state = env.env.ale.getScreenRGB()
+out = m.forward(torch.tensor(prev_state).view(1, 3, 210, 160).float())
+J=
+
+J = m.loss()
+print(out)
